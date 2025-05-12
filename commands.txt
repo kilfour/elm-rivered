@@ -1,0 +1,2 @@
+elm  make src/Main.elm  --output=public/main.js --optimize
+elm-live src/Main.elm --pushstate --dir=public --start-page=index.html --open '--' --output=public/main.js --optimize

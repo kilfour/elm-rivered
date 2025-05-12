@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "text": "Heb je ooit iets proberen te maken of repareren met een YouTube-tutorial? Wat was het?",
+    "tags": [
+      "praktisch",
+      "zelfredzaamheid"
+    ],
+    "note": "Goed om zelfstandigheid en digitale leercurves aan te raken."
+  },
+  {
+    "id": 2,
+    "text": "Wat is iets dat je hebt gemaakt (digitaal of fysiek) waar je trots op was—ook als het niet werkte?",
+    "tags": [
+      "creatief",
+      "zelfexpressie"
+    ],
+    "note": "Helpt deelnemers zichzelf als makers te zien."
+  },
+  {
+    "id": 3,
+    "text": "Als je het woord \"algoritme\" aan een kind moest uitleggen, wat zou je zeggen?",
+    "tags": [
+      "technisch",
+      "abstract denken"
+    ],
+    "note": "Laat denkniveau en affiniteit met tech-taal zien."
+  },
+  {
+    "id": 4,
+    "text": "Welke app of website gebruik je vaak, ook al weet je niet precies hoe het werkt?",
+    "tags": [
+      "technologiegebruik",
+      "reflectie"
+    ],
+    "note": "Koppelt dagelijks gebruik aan bewustzijn over tech."
+  },
+  {
+    "id": 5,
+    "text": "Heb je ooit naar een stukje code gekeken? Hoe zag dat eruit voor jou?",
+    "tags": [
+      "tech exposure",
+      "attitude"
+    ],
+    "note": "Peilt of ze eerder met code in aanraking kwamen."
+  },
+  {
+    "id": 6,
+    "text": "Wat is het eerste wat je doet als iets op je telefoon of computer niet werkt?",
+    "tags": [
+      "probleemoplossing",
+      "digitaal denken"
+    ],
+    "note": "Laat zien of ze tech-reactief of probleemgericht zijn."
+  },
+  {
+    "id": 7,
+    "text": "Wat heb je onlangs geleerd dat je verbaasde?",
+    "tags": [
+      "leren",
+      "nieuwsgierigheid"
+    ],
+    "note": "Onthult leerstijl en mindset."
+  },
+  {
+    "id": 8,
+    "text": "Als je brein een computer was, wat zou het laten crashen?",
+    "tags": [
+      "humor",
+      "zelfreflectie"
+    ],
+    "note": "Lichtvoetig moment dat stress en kwetsbaarheid mag benoemen."
+  },
+  {
+    "id": 9,
+    "text": "Heb je ooit gedacht \"ik zou deze app/website kunnen maken\"? Wat was het?",
+    "tags": [
+      "initiatief",
+      "digitale creativiteit"
+    ],
+    "note": "Spoort tech-ambities op, zelfs zonder skills."
+  },
+  {
+    "id": 10,
+    "text": "Wat is jouw relatie met spreadsheets: liefde, haat of onbekend terrein?",
+    "tags": [
+      "praktisch",
+      "tech familiarity"
+    ],
+    "note": "Snelle check voor comfort met logische interfaces."
+  }
+]
