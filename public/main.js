@@ -519,11 +519,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.B.E === region.T.E)
+	if (region.B.F === region.T.F)
 	{
-		return 'on line ' + region.B.E;
+		return 'on line ' + region.B.F;
 	}
-	return 'on lines ' + region.B.E + ' through ' + region.T.E;
+	return 'on lines ' + region.B.F + ' through ' + region.T.F;
 }
 
 
@@ -5414,6 +5414,10 @@ var $elm$core$Task$perform = F2(
 			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$document = _Browser_document;
+var $author$project$Main$SetSeed = function (a) {
+	return {$: 4, a: a};
+};
+var $elm$random$Random$Generate = $elm$core$Basics$identity;
 var $elm$random$Random$Seed = F2(
 	function (a, b) {
 		return {$: 0, a: a, b: b};
@@ -5433,10 +5437,125 @@ var $elm$random$Random$initialSeed = function (x) {
 	return $elm$random$Random$next(
 		A2($elm$random$Random$Seed, state2, incr));
 };
+var $elm$time$Time$Name = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$time$Time$Offset = function (a) {
+	return {$: 1, a: a};
+};
+var $elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 0, a: a, b: b};
+	});
+var $elm$time$Time$customZone = $elm$time$Time$Zone;
 var $elm$time$Time$Posix = $elm$core$Basics$identity;
 var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
+var $elm$time$Time$posixToMillis = function (_v0) {
+	var millis = _v0;
+	return millis;
+};
+var $elm$random$Random$init = A2(
+	$elm$core$Task$andThen,
+	function (time) {
+		return $elm$core$Task$succeed(
+			$elm$random$Random$initialSeed(
+				$elm$time$Time$posixToMillis(time)));
+	},
+	$elm$time$Time$now);
+var $elm$random$Random$step = F2(
+	function (_v0, seed) {
+		var generator = _v0;
+		return generator(seed);
+	});
+var $elm$random$Random$onEffects = F3(
+	function (router, commands, seed) {
+		if (!commands.b) {
+			return $elm$core$Task$succeed(seed);
+		} else {
+			var generator = commands.a;
+			var rest = commands.b;
+			var _v1 = A2($elm$random$Random$step, generator, seed);
+			var value = _v1.a;
+			var newSeed = _v1.b;
+			return A2(
+				$elm$core$Task$andThen,
+				function (_v2) {
+					return A3($elm$random$Random$onEffects, router, rest, newSeed);
+				},
+				A2($elm$core$Platform$sendToApp, router, value));
+		}
+	});
+var $elm$random$Random$onSelfMsg = F3(
+	function (_v0, _v1, seed) {
+		return $elm$core$Task$succeed(seed);
+	});
+var $elm$random$Random$Generator = $elm$core$Basics$identity;
+var $elm$random$Random$map = F2(
+	function (func, _v0) {
+		var genA = _v0;
+		return function (seed0) {
+			var _v1 = genA(seed0);
+			var a = _v1.a;
+			var seed1 = _v1.b;
+			return _Utils_Tuple2(
+				func(a),
+				seed1);
+		};
+	});
+var $elm$random$Random$cmdMap = F2(
+	function (func, _v0) {
+		var generator = _v0;
+		return A2($elm$random$Random$map, func, generator);
+	});
+_Platform_effectManagers['Random'] = _Platform_createManager($elm$random$Random$init, $elm$random$Random$onEffects, $elm$random$Random$onSelfMsg, $elm$random$Random$cmdMap);
+var $elm$random$Random$command = _Platform_leaf('Random');
+var $elm$random$Random$generate = F2(
+	function (tagger, generator) {
+		return $elm$random$Random$command(
+			A2($elm$random$Random$map, tagger, generator));
+	});
+var $elm$core$Bitwise$and = _Bitwise_and;
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$Bitwise$xor = _Bitwise_xor;
+var $elm$random$Random$peel = function (_v0) {
+	var state = _v0.a;
+	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
+	return ((word >>> 22) ^ word) >>> 0;
+};
+var $elm$random$Random$int = F2(
+	function (a, b) {
+		return function (seed0) {
+			var _v0 = (_Utils_cmp(a, b) < 0) ? _Utils_Tuple2(a, b) : _Utils_Tuple2(b, a);
+			var lo = _v0.a;
+			var hi = _v0.b;
+			var range = (hi - lo) + 1;
+			if (!((range - 1) & range)) {
+				return _Utils_Tuple2(
+					(((range - 1) & $elm$random$Random$peel(seed0)) >>> 0) + lo,
+					$elm$random$Random$next(seed0));
+			} else {
+				var threshhold = (((-range) >>> 0) % range) >>> 0;
+				var accountForBias = function (seed) {
+					accountForBias:
+					while (true) {
+						var x = $elm$random$Random$peel(seed);
+						var seedN = $elm$random$Random$next(seed);
+						if (_Utils_cmp(x, threshhold) < 0) {
+							var $temp$seed = seedN;
+							seed = $temp$seed;
+							continue accountForBias;
+						} else {
+							return _Utils_Tuple2((x % range) + lo, seedN);
+						}
+					}
+				};
+				return accountForBias(seed0);
+			}
+		};
+	});
 var $author$project$Questions$questions = _List_fromArray(
 	[
 		{a: false, Y: 1, aH: 'Heb je ooit iets proberen te maken of repareren met een YouTube-tutorial? Wat was het?'},
@@ -5491,20 +5610,23 @@ var $author$project$Questions$questions = _List_fromArray(
 		{a: false, Y: 50, aH: 'Wat hoop je uit deze cursus te halen?'}
 	]);
 var $author$project$Main$init = function (_v0) {
-	var seed = $elm$random$Random$initialSeed(42);
+	var seed = $elm$random$Random$initialSeed(40);
 	return _Utils_Tuple2(
 		{
-			J: $elm$core$Maybe$Nothing,
+			E: $elm$core$Maybe$Nothing,
 			u: false,
 			z: $elm$time$Time$millisToPosix(0),
 			n: $author$project$Questions$questions,
-			K: seed,
+			G: seed,
 			B: $elm$time$Time$millisToPosix(0)
 		},
-		$elm$core$Platform$Cmd$none);
+		A2(
+			$elm$random$Random$generate,
+			$author$project$Main$SetSeed,
+			A2($elm$random$Random$int, 0, 1000000)));
 };
 var $author$project$Main$Tick = function (a) {
-	return {$: 5, a: a};
+	return {$: 6, a: a};
 };
 var $elm$time$Time$Every = F2(
 	function (a, b) {
@@ -5767,17 +5889,6 @@ var $elm$core$Dict$merge = F6(
 			leftovers);
 	});
 var $elm$core$Platform$sendToSelf = _Platform_sendToSelf;
-var $elm$time$Time$Name = function (a) {
-	return {$: 0, a: a};
-};
-var $elm$time$Time$Offset = function (a) {
-	return {$: 1, a: a};
-};
-var $elm$time$Time$Zone = F2(
-	function (a, b) {
-		return {$: 0, a: a, b: b};
-	});
-var $elm$time$Time$customZone = $elm$time$Time$Zone;
 var $elm$time$Time$setInterval = _Time_setInterval;
 var $elm$core$Process$spawn = _Scheduler_spawn;
 var $elm$time$Time$spawnHelp = F3(
@@ -5868,7 +5979,6 @@ var $elm$time$Time$onEffects = F3(
 				},
 				killTask));
 	});
-var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
 var $elm$time$Time$onSelfMsg = F3(
 	function (router, interval, state) {
 		var _v0 = A2($elm$core$Dict$get, interval, state.am);
@@ -6029,48 +6139,6 @@ var $elm$core$List$head = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $elm$random$Random$Generator = $elm$core$Basics$identity;
-var $elm$core$Bitwise$and = _Bitwise_and;
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var $elm$core$Bitwise$xor = _Bitwise_xor;
-var $elm$random$Random$peel = function (_v0) {
-	var state = _v0.a;
-	var word = (state ^ (state >>> ((state >>> 28) + 4))) * 277803737;
-	return ((word >>> 22) ^ word) >>> 0;
-};
-var $elm$random$Random$int = F2(
-	function (a, b) {
-		return function (seed0) {
-			var _v0 = (_Utils_cmp(a, b) < 0) ? _Utils_Tuple2(a, b) : _Utils_Tuple2(b, a);
-			var lo = _v0.a;
-			var hi = _v0.b;
-			var range = (hi - lo) + 1;
-			if (!((range - 1) & range)) {
-				return _Utils_Tuple2(
-					(((range - 1) & $elm$random$Random$peel(seed0)) >>> 0) + lo,
-					$elm$random$Random$next(seed0));
-			} else {
-				var threshhold = (((-range) >>> 0) % range) >>> 0;
-				var accountForBias = function (seed) {
-					accountForBias:
-					while (true) {
-						var x = $elm$random$Random$peel(seed);
-						var seedN = $elm$random$Random$next(seed);
-						if (_Utils_cmp(x, threshhold) < 0) {
-							var $temp$seed = seedN;
-							seed = $temp$seed;
-							continue accountForBias;
-						} else {
-							return _Utils_Tuple2((x % range) + lo, seedN);
-						}
-					}
-				};
-				return accountForBias(seed0);
-			}
-		};
-	});
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
@@ -6083,11 +6151,8 @@ var $elm$core$Maybe$map = F2(
 		}
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
-var $elm$random$Random$step = F2(
-	function (_v0, seed) {
-		var generator = _v0;
-		return generator(seed);
-	});
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$file$File$toString = _File_toString;
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -6155,7 +6220,7 @@ var $author$project$Main$update = F2(
 								{u: false}),
 							$elm$core$Platform$Cmd$none);
 					}
-				case 4:
+				case 5:
 					var _v1 = model.n;
 					if (!_v1.b) {
 						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -6166,7 +6231,7 @@ var $author$project$Main$update = F2(
 								$elm$random$Random$int,
 								0,
 								$elm$core$List$length(model.n) - 1),
-							model.K);
+							model.G);
 						var index = _v2.a;
 						var newSeed = _v2.b;
 						var maybeQ = $elm$core$List$head(
@@ -6190,14 +6255,23 @@ var $author$project$Main$update = F2(
 							_Utils_update(
 								model,
 								{
-									J: maybeQ,
+									E: maybeQ,
 									z: $elm$time$Time$millisToPosix(0),
 									n: updatedQuestions,
-									K: newSeed,
+									G: newSeed,
 									B: $elm$time$Time$millisToPosix(0)
 								}),
 							$elm$core$Platform$Cmd$none);
 					}
+				case 4:
+					var randomInt = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								G: $elm$random$Random$initialSeed(randomInt)
+							}),
+						$elm$core$Platform$Cmd$none);
 				default:
 					var newNow = msg.a;
 					var newModel = _Utils_eq(
@@ -6211,7 +6285,7 @@ var $author$project$Main$update = F2(
 			}
 		}
 	});
-var $author$project$Main$DrawNew = {$: 4};
+var $author$project$Main$DrawNew = {$: 5};
 var $author$project$Main$LoadQuestions = {$: 0};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -6248,10 +6322,6 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		$elm$html$Html$Events$on,
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
-};
-var $elm$time$Time$posixToMillis = function (_v0) {
-	var millis = _v0;
-	return millis;
 };
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
@@ -6304,7 +6374,7 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$text('Draw a Question')
 							])),
 						function () {
-						var _v0 = model.J;
+						var _v0 = model.E;
 						if (!_v0.$) {
 							var q = _v0.a;
 							return A2(
@@ -6336,17 +6406,25 @@ var $author$project$Main$view = function (model) {
 									]));
 						}
 					}(),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('timer')
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text(
-								'Time elapsed: ' + ($elm$core$String$fromInt(seconds) + ' sec.'))
-							]))
+						function () {
+						var _v1 = model.E;
+						if (!_v1.$) {
+							var q = _v1.a;
+							return A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('timer')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										'Time elapsed: ' + ($elm$core$String$fromInt(seconds) + ' sec.'))
+									]));
+						} else {
+							return $elm$html$Html$text('');
+						}
+					}()
 					]))
 			]));
 };

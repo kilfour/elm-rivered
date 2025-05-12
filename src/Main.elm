@@ -36,7 +36,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     let
         seed =
-            Random.initialSeed 42
+            Random.initialSeed 40
     in
     ( { questions = Questions.questions
       , current = Nothing
@@ -45,7 +45,7 @@ init _ =
       , start = Time.millisToPosix 0
       , now = Time.millisToPosix 0
       }
-    , Cmd.none
+    , Random.generate SetSeed (Random.int 0 1000000)
     )
 
 
@@ -63,6 +63,7 @@ type Msg
     | FileSelected File
     | FileLoaded (Result String String)
     | QuestionsParsed (Result Decode.Error (List Question))
+    | SetSeed Int
     | DrawNew
     | Tick Posix
 
@@ -122,6 +123,9 @@ update msg model =
                     , Cmd.none
                     )
 
+        SetSeed randomInt ->
+            ( { model | seed = Random.initialSeed randomInt }, Cmd.none )
+
         Tick newNow ->
             let
                 newModel =
@@ -167,7 +171,12 @@ view model =
 
                     Nothing ->
                         div [ class "note" ] [ text "Click the button to draw a question." ]
-                , div [ class "timer" ] [ text ("Time elapsed: " ++ String.fromInt seconds ++ " sec.") ]
+                , case model.current of
+                    Just q ->
+                        div [ class "timer" ] [ text ("Time elapsed: " ++ String.fromInt seconds ++ " sec.") ]
+
+                    Nothing ->
+                        text ""
                 ]
         ]
 
